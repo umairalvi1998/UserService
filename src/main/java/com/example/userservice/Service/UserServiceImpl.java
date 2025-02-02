@@ -1,7 +1,7 @@
 package com.example.userservice.Service;
 
-import com.example.userservice.DTOs.UserDto;
 import com.example.userservice.Exceptions.InvalidPasswordException;
+import com.example.userservice.Exceptions.SessionExpiredException;
 import com.example.userservice.Exceptions.UserAlreadExistsException;
 import com.example.userservice.Exceptions.UserNotFoundException;
 import com.example.userservice.Models.Token;
@@ -9,7 +9,6 @@ import com.example.userservice.Models.User;
 import com.example.userservice.Respository.TokenRepository;
 import com.example.userservice.Respository.UserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +78,16 @@ public class UserServiceImpl implements  UserService{
     }
 
     @Override
-    public Void logOut(String token) {
-        return null;
+    public void logOut(String token) throws SessionExpiredException {
+
+        Optional<Token> tokenOptional = tokenRepository.findByValueAndDeleted(token, false);
+        if(tokenOptional.isEmpty()) {
+            throw new SessionExpiredException("Session Expired");
+        }
+
+        Token tokenInDb = tokenOptional.get();
+        tokenInDb.setDeleted(true);
+        tokenRepository.save(tokenInDb);
+
     }
 }

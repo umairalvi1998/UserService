@@ -1,6 +1,7 @@
 package com.example.userservice.GlobalExceptionHandler;
 
 import com.example.userservice.Exceptions.InvalidPasswordException;
+import com.example.userservice.Exceptions.SessionExpiredException;
 import com.example.userservice.Exceptions.UserAlreadExistsException;
 import com.example.userservice.Exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -25,5 +26,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<String> handleInvalidPasswordException( InvalidPasswordException ex ) {
         return new ResponseEntity<>("Invalid password: " + ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SessionExpiredException.class)
+    public ResponseEntity<String> handleSessionExpiredException( SessionExpiredException ex ) {
+        return new ResponseEntity<>("Session Expired: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }

@@ -1,7 +1,10 @@
 package com.example.userservice.Controllers;
 
 import com.example.userservice.DTOs.*;
+import com.example.userservice.Exceptions.InvalidPasswordException;
+import com.example.userservice.Exceptions.SessionExpiredException;
 import com.example.userservice.Exceptions.UserAlreadExistsException;
+import com.example.userservice.Exceptions.UserNotFoundException;
 import com.example.userservice.Models.Token;
 import com.example.userservice.Models.User;
 import com.example.userservice.Service.UserService;
@@ -30,7 +33,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto requestDto) throws UserNotFoundException, InvalidPasswordException {
         Token token = userService.login(requestDto.getEmail(), requestDto.getPassword());
         LoginResponseDto responseDto = new LoginResponseDto();
         responseDto.setToken(token);
@@ -39,6 +42,12 @@ public class UserController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logOut(@RequestBody LogOutRequestDto requestDto) {
-        return null;
+
+        try {
+            userService.logOut(requestDto.getToken());
+            return  new ResponseEntity<>(HttpStatus.OK);
+        } catch (SessionExpiredException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

@@ -90,4 +90,14 @@ public class UserServiceImpl implements  UserService{
         tokenRepository.save(tokenInDb);
 
     }
+
+    public User validateToken(String token) throws SessionExpiredException {
+         Optional<Token> tokenOptional = tokenRepository.findByValueAndDeleted(token,false);
+
+         if(tokenOptional.isEmpty()) {
+             throw new SessionExpiredException("Session Expired");
+         }
+
+         return tokenOptional.get().getUser();
+    }
 }

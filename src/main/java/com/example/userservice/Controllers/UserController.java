@@ -10,10 +10,7 @@ import com.example.userservice.Models.User;
 import com.example.userservice.Service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -49,5 +46,12 @@ public class UserController {
         } catch (SessionExpiredException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/validate/{token}")
+    public UserDto validateToken(@PathVariable("token") String tokenValue) throws SessionExpiredException {
+        User user = userService.validateToken(tokenValue);
+
+            return UserDto.from(user);
     }
 }

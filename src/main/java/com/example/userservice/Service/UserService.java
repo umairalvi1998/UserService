@@ -11,4 +11,5 @@ public interface UserService {
     public User signUp(String name, String email, String password) throws UserAlreadExistsException;
     public Token login(String username, String password) throws UserNotFoundException, InvalidPasswordException;
     public void logOut(String token) throws SessionExpiredException;
+    public User validateToken(String token) throws SessionExpiredException;
 }

@@ -24,3 +24,8 @@ import org.springframework.security.web.SecurityFilterChain;
 //        return http.build();  // Builds and returns the configured SecurityFilterChain
 //    }
 //}
+
+/*This was created, when I initiallly wanted to use Spring security for Bcrypt encoding and since spring security comes with the
+defualt login/signup i.e. all the endpoints are secured by default, I had to create a custom security configuration to allow all requests.
+But later I implemented OAuth2.0 and OpenID Connect 1.0 for the project, so I had to remove this configuration.
+ */

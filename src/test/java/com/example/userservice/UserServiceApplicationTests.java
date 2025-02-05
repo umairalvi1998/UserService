@@ -15,6 +15,8 @@ import java.util.UUID;
 @SpringBootTest
 class UserServiceApplicationTests {
 
+    @Autowired
+    private JpaRegisteredClientRepository jpaRegisteredClientRepository;
 
     @Test
     void contextLoads() {

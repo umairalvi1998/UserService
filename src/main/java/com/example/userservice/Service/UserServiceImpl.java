@@ -1,5 +1,6 @@
 package com.example.userservice.Service;
 
+import com.example.userservice.DTOs.SendEmailDto;
 import com.example.userservice.Exceptions.InvalidPasswordException;
 import com.example.userservice.Exceptions.SessionExpiredException;
 import com.example.userservice.Exceptions.UserAlreadExistsException;
@@ -8,7 +9,10 @@ import com.example.userservice.Models.Token;
 import com.example.userservice.Models.User;
 import com.example.userservice.Respository.TokenRepository;
 import com.example.userservice.Respository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +25,19 @@ public class UserServiceImpl implements  UserService{
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private TokenRepository tokenRepository;
+    private KafkaTemplate<String,String> kafkaTemplate;
+    private ObjectMapper objectMapper;
 
-     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,TokenRepository tokenRepository) {
+     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,TokenRepository tokenRepository,KafkaTemplate kafkaTemplate,ObjectMapper objectMapper) {
          this.userRepository = userRepository;
          this.bCryptPasswordEncoder = bCryptPasswordEncoder;
          this.tokenRepository = tokenRepository;
+         this.kafkaTemplate = kafkaTemplate;
+         this.objectMapper = objectMapper;
      }
 
     @Override
-    public User signUp(String name, String email, String password) throws UserAlreadExistsException {
+    public User signUp(String name, String email, String password) throws UserAlreadExistsException, JsonProcessingException {
          Optional<User> userOptional = userRepository.findByEmail(email);
          if (userOptional.isPresent()) {
              throw new UserAlreadExistsException("User Already Exists with this email");
@@ -38,6 +46,16 @@ public class UserServiceImpl implements  UserService{
          user.setName(name);
          user.setEmail(email);
          user.setHashedpassword(bCryptPasswordEncoder.encode(password));
+
+        SendEmailDto emailDto = new SendEmailDto();
+        emailDto.setTo(email);
+        emailDto.setSubject("Welcome to our platform");
+        emailDto.setBody("Welcome to our platform, we are glad to have you here.");
+        emailDto.setName(name);
+
+         //Publish an event inside kafka to send a welcome email to user.
+        kafkaTemplate.send("Send-Email-Notification",
+               objectMapper.writeValueAsString(emailDto));
 
         return userRepository.save(user);
     }

@@ -8,6 +8,7 @@ import com.example.userservice.Exceptions.UserNotFoundException;
 import com.example.userservice.Models.Token;
 import com.example.userservice.Models.User;
 import com.example.userservice.Service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto>  signUp(@RequestBody SignupRequestDto requestDto) throws UserAlreadExistsException {
+    public ResponseEntity<UserDto>  signUp(@RequestBody SignupRequestDto requestDto) throws UserAlreadExistsException, JsonProcessingException {
          User user =  userService.signUp(requestDto.getName(), requestDto.getEmail(), requestDto.getPassword());
 
           return new ResponseEntity<>(UserDto.from(user), HttpStatus.CREATED);

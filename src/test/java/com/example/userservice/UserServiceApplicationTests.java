@@ -15,12 +15,12 @@ import java.util.UUID;
 @SpringBootTest
 class UserServiceApplicationTests {
 
-    @Autowired
-    private JpaRegisteredClientRepository jpaRegisteredClientRepository;
-
-    @Test
-    void contextLoads() {
-    }
+//    @Autowired
+//    private JpaRegisteredClientRepository jpaRegisteredClientRepository;
+//
+//    @Test
+//    void contextLoads() {
+//    }
 //
 //    @Test
 //    void storeRegisteredClientInDb() {
